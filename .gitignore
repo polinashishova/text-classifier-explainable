@@ -30,6 +30,7 @@ __pycache__/
 
 # ----- Jupyter Notebook -----
 .ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
 
 # ----- Виртуальные окружения -----
 venv/
@@ -39,6 +40,7 @@ env/
 *.env
 .env.*
 !.env.example
+tce-venv/
 
 # ----- Локальные сборки/артефакты -----
 build/
