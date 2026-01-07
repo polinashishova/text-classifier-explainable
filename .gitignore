@@ -54,6 +54,7 @@ dist/
 # ----- Данные -----
 data/raw/
 data/processed/
+data/features/
 
 # ----- Streamlit -----
 .streamlit/
