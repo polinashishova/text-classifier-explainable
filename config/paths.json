@@ -1,0 +1,21 @@
+{
+    "data_dir": "data",
+    "data_raw_dir": "data/raw",
+    "aclImdb_v1": "aclImdb_v1.tar.gz",
+    "aclImdb": "aclImdb",
+    "train": "train",
+    "test": "test",
+    "raw_train": "train-texts.txt",
+    "raw_test": "test-texts.txt",
+    "data_processed_dir": "data/processed",
+    "processed_train": "cleaned-train.txt",
+    "processed_test": "cleaned-test.txt",
+    "train_labels": "train-labels.txt",
+    "test_labels": "test-labels.txt",
+    "data_features_dir": "data/features",
+    "features_train": "X-train-features.npz",
+    "features_test": "X-test-features.npz",
+    "models_dir": "models",
+    "model": "model.joblib",
+    "explainer": "explainer.joblib"
+}

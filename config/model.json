@@ -1,0 +1,20 @@
+{
+    "lr":
+    {
+        "C": 10,
+        "l1_ratio": 0.0,
+        "random_state": 42,
+        "solver": "saga"
+    },
+    "tfidf":
+    {
+        "max_df": 0.95,
+        "min_df": 2,
+        "ngram_range": [
+            1,
+            2
+        ],
+        "preprocessor": "clean_text",
+        "sublinear_tf": true
+    }
+}
