@@ -1,5 +1,6 @@
 {
     "data_dir": "data",
+    "data_url": "https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz",
     "data_raw_dir": "data/raw",
     "aclImdb_v1": "aclImdb_v1.tar.gz",
     "aclImdb": "aclImdb",
@@ -15,7 +16,7 @@
     "data_features_dir": "data/features",
     "features_train": "X-train-features.npz",
     "features_test": "X-test-features.npz",
-    "models_dir": "models",
+    "artifacts_dir": "artifacts",
     "model": "model.joblib",
-    "explainer": "explainer.joblib"
+    "shap_bg": "shap/X_bg.npz"
 }

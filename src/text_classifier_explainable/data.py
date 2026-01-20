@@ -3,19 +3,85 @@
 import re
 from pathlib import Path
 import logging
-from typing import Iterable, Optional, Union
-import urllib
+from typing import Iterable, Optional, Union, List, Dict, Any
+import urllib.request
+import urllib.error
 import tarfile
 from scipy import sparse
+import json
 
 logger = logging.getLogger(__name__)
 
 LABELS = {
-    'neg': 0, 
-    'pos': 1
+    'neg': '0', 
+    'pos': '1'
     }
 
 data_url = "https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz"
+
+
+def download_data(url: str, path: Path) -> None:
+    """
+    Download a file from a URL and save it to the given path.
+
+    Args:
+        url: URL of the file to download.
+        path: Full path including filename where the file will be saved.
+
+    Raises:
+        urllib.error.URLError: If the download fails.
+        OSError: If the file cannot be saved.
+    """
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    if path.exists():
+        logger.info('File already exists at %s, skipping download.', path)
+        return
+
+    try:
+        logger.info('Downloading %s to %s', url, path)
+        urllib.request.urlretrieve(url, path)
+        logger.info('Download complete: %s', path)
+    except urllib.error.URLError as e:
+        logger.exception("Failed to download from %s: %s", url, e)
+        raise
+    except OSError as e:
+        logger.exception("Failed to save file %s: %s", path, e)
+        raise
+
+
+def extract_archive(path_from: Path, path_to: Path, expected_path: Path) -> None:
+    """
+    Extract a tar.gz archive from path_from to path_to directory unless expected extracted data already exists.
+
+    Args:
+        path_from: Path to the tar.gz archive.
+        path_to: Directory where files will be extracted.
+        expected_path: Path that should exist after successful extraction.
+
+    Raises:
+        tarfile.TarError: If the archive is corrupted or cannot be read.
+        OSError: If there is a filesystem error during extraction.
+    """
+
+    path_to.mkdir(parents=True, exist_ok=True)
+
+    if expected_path.exists():
+        logger.info(
+            "Archive already extracted, found %s. Skipping extraction.",
+            expected_path,
+        )
+        return
+
+    try:
+        logger.info('Extracting %s to %s', path_from, path_to)
+        with tarfile.open(path_from, 'r:gz') as tar:
+            tar.extractall(path=path_to)
+        logger.info('Extraction complete: %s', path_to)
+    except (tarfile.TarError, OSError) as e:
+        logger.exception("Failed to extract %s", path_from)
+        raise
 
 
 def _validate_data_structure(search_path: Path) -> None:
@@ -120,101 +186,6 @@ def save_data(path: Path, data: Union[Iterable[str], sparse.spmatrix]) -> None:
     logger.info('Saved %d lines to %s', count, path)
 
 
-def clean_text(text: Optional[str]) -> str:
-    """
-    Clean a text string.
-
-    Steps:
-    1. Convert text to lowercase.
-    2. Replace HTML tags with a space.
-    3. Replace common punctuation characters (-().,:;?!) with a space.
-    4. Remove all non-alphabetic characters.
-    5. Normalize whitespace: multiple spaces -> single space.
-
-    Args:
-        text: A text string or None.
-    
-    Returns:
-        A cleaned text string suitable for vectorization. If input text string is None or empty, returns empty string.
-    """
-
-    if not text:
-        return ""
-    
-    text = text.lower()
-    text = re.sub(r"<.*?>", " ", text)
-    text = re.sub(r"[-().,:;?!]", " ", text)
-    text = re.sub(r"[^a-z\s]", "", text)
-    text = re.sub(r"\s+", " ", text).strip()
-
-    return text
-
-
-def download_data(url: str, path: Path) -> None:
-    """
-    Download a file from a URL and save it to the given path.
-
-    Args:
-        url: URL of the file to download.
-        path: Full path including filename where the file will be saved.
-
-    Raises:
-        urllib.error.URLError: If the download fails.
-        OSError: If the file cannot be saved.
-    """
-
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    if path.exists():
-        logger.info('File already exists at %s, skipping download.', path)
-        return
-
-    try:
-        logger.info('Downloading %s to %s', url, path)
-        urllib.request.urlretrieve(url, path)
-        logger.info('Download complete: %s', path)
-    except urllib.error.URLError as e:
-        logger.exception("Failed to download from %s: %s", url, e)
-        raise
-    except OSError as e:
-        logger.exception("Failed to save file %s: %s", path, e)
-        raise
-
-
-def extract_archive(path_from: Path, path_to: Path):
-    """
-    Extract a tar.gz archive from path_from to path_to directory.
-
-    Args:
-        path_from: Path to the tar.gz archive.
-        path_to: Directory where files will be extracted.
-
-    Raises:
-        tarfile.TarError: If the archive is corrupted or cannot be read.
-        OSError: If there is a filesystem error during extraction.
-    """
-
-    path_to.mkdir(parents=True, exist_ok=True)
-
-    if any(path_to.iterdir()):
-        logger.info('Directory %s already has files, skipping extraction.', path_to)
-        return
-    
-    try:
-        logger.info('Extracting %s to %s', path_from, path_to)
-        with tarfile.open(path_from, 'r:gz') as tar:
-            tar.extractall(path=path_to)
-        logger.info('Extraction complete: %s', path_to)
-    except (tarfile.TarError, OSError) as e:
-        logger.exception("Failed to extract %s", path_from)
-        raise
-
-
-from pathlib import Path
-from typing import Union, List
-from scipy import sparse
-
-
 def load_data(path: Path) -> Union[List[str], sparse.spmatrix]:
     """
     Load text data or a SciPy sparse matrix from disk.
@@ -262,4 +233,71 @@ def load_data(path: Path) -> Union[List[str], sparse.spmatrix]:
         return lines
     except OSError:
         logger.exception('Failed to load text data from %s', path)
+        raise
+
+
+def clean_text(text: Optional[str]) -> str:
+    """
+    Clean a text string.
+
+    Steps:
+    1. Convert text to lowercase.
+    2. Replace HTML tags with a space.
+    3. Replace common punctuation characters (-().,:;?!) with a space.
+    4. Remove all non-alphabetic characters.
+    5. Normalize whitespace: multiple spaces -> single space.
+
+    Args:
+        text: A text string or None.
+    
+    Returns:
+        A cleaned text string suitable for vectorization. If input text string is None or empty, returns empty string.
+    """
+
+    if not text:
+        return ""
+    
+    text = text.lower()
+    text = re.sub(r"<.*?>", " ", text)
+    text = re.sub(r"[-().,:;?!]", " ", text)
+    text = re.sub(r"[^a-z\s]", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
+
+    return text
+
+
+def load_json(path: Path) -> Dict[str, Any]:
+    """
+    Load JSON data from a file.
+
+    Args:
+        path: Path to a JSON file.
+
+    Returns:
+        Parsed JSON content as a dictionary.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        json.JSONDecodeError: If the file is not valid JSON.
+        OSError: If reading the file fails.
+    """
+
+    logger.info('Loading JSON from %s', path)
+
+    if not path.exists():
+        logger.error('JSON file not found: %s', path)
+        raise FileNotFoundError(f'File not found: {path}')
+
+    try:
+        with path.open('r', encoding='utf-8') as json_file:
+            data = json.load(json_file)
+            logger.info('Successfully loaded JSON from %s', path)
+            return data
+
+    except json.JSONDecodeError:
+        logger.exception('Invalid JSON format in %s', path)
+        raise
+
+    except OSError:
+        logger.exception('Failed to read JSON file %s', path)
         raise
