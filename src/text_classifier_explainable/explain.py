@@ -6,8 +6,6 @@ from scipy import sparse
 from sklearn.pipeline import Pipeline
 from typing import Sequence
 
-masker = shap.maskers.Independent
-
 
 def build_shap_background(model: Pipeline, X_train: Sequence[str], max_samples: int = 500) -> sparse.spmatrix:
     """
@@ -23,7 +21,7 @@ def build_shap_background(model: Pipeline, X_train: Sequence[str], max_samples: 
     return X_bg
 
 
-def build_explainer(model: Pipeline, X_bg: sparse.spmatrix, masker) -> shap.LinearExplainer:
+def build_explainer(model: Pipeline, X_bg: sparse.spmatrix) -> shap.LinearExplainer:
     """
     Build a SHAP LinearExplainer for a trained logistic regression model.
 
@@ -34,10 +32,10 @@ def build_explainer(model: Pipeline, X_bg: sparse.spmatrix, masker) -> shap.Line
     Returns:
         shap.LinearExplainer
     """
-
+    masker = shap.maskers.Independent(X_bg)
     lr = model.named_steps['lr']
 
-    explainer = shap.LinearExplainer(model=lr, masker=masker, data=X_bg)
+    explainer = shap.LinearExplainer(model=lr, masker=masker)
     return explainer
 
 

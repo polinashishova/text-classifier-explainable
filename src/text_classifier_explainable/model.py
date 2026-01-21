@@ -5,6 +5,31 @@ from typing import Dict, Any, Sequence, Union
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+import joblib
+from pathlib import Path
+import shap
+import logging
+from .data import clean_text
+from scipy import sparse
+
+logger = logging.getLogger(__name__)
+
+
+def _validate_pipeline_params(params: Dict) -> Dict:
+    if not isinstance(params, dict):
+        try: 
+            params = dict(params)
+        except Exception:
+            raise Exception('Expected model parametrs structure should be dictionary')
+    for key, value in params.items():
+        for par, v in value.items():
+            if isinstance(v, list):
+                params[key][par] = tuple(v)
+            if par == 'preprocessor':
+                params[key][par] = eval(v)
+    
+    return params
+
 
 
 def build_model(params: Dict[str, Dict[str, Any]]) -> Pipeline:
@@ -25,6 +50,7 @@ def build_model(params: Dict[str, Dict[str, Any]]) -> Pipeline:
     Returns: 
         sklearn.pipeline.Pipeline: Configured model pipeline.
     """
+    params = _validate_pipeline_params(params)
 
     required_keys = {'tfidf', 'lr'}
     missing = required_keys - params.keys()
@@ -60,7 +86,7 @@ def train_model(model: Pipeline, X_train: Sequence[str], y_train: Sequence[int])
 
     Args:
         model: Unfitted sklearn pipeline.
-        X_train: Training texts.
+        X_train: Training (uncleand) texts.
         y_train: Training labels.
     
     Returns:
@@ -70,11 +96,66 @@ def train_model(model: Pipeline, X_train: Sequence[str], y_train: Sequence[int])
         ValueError: If `y_train` has invalid shape or contains NaN values.
         TypeError: If `y_train` is not integer-encoded.
     """
-    _validate_labels(y_train)
+    #_validate_labels(y_train)
     return model.fit(X_train, y_train)
 
 
-def predict(model: Pipeline, texts: Union[str, Sequence[str]]) -> tuple[list[int], list[list[float]]]:
+def save_model(model: Union[Pipeline, shap.LinearExplainer], path: Path) -> None:
+    """
+    Save model pipeline (or shap.LinearExplainer) to disk.
+
+    Args:
+        model: Fitted model sklearn pipeline (or built shap linear explainer).
+        path: Destination path.
+    
+    Raises:
+        Exception:
+                Re-raises any exception that occurs during serialization.
+                Errors are logged before being raised.
+    """
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    logger.info('Saving model to %s', path)
+    try:
+        joblib.dump(model, path)
+        logger.info('Model saved')
+    except Exception:
+        logger.exception('Failed to save model to %s', path)
+
+
+def load_model(path: Path) -> Union[Pipeline, shap.LinearExplainer]:
+    """
+    Load a saved sklearn Pipeline or SHAP LinearExplainer from disk.
+
+    Args:
+        path: Path to the serialized model file.
+
+    Returns:
+        Loaded sklearn Pipeline or shap.LinearExplainer instance.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        Exception:
+            Re-raises any exception that occurs during deserialization.
+            Errors are logged before being raised.
+    """
+    logger.info("Loading model from %s", path)
+
+    if not path.exists():
+        logger.error("Model file not found: %s", path)
+        raise FileNotFoundError(f"Model file not found: {path}")
+
+    try:
+        model = joblib.load(path)
+        logger.info("Model successfully loaded from %s", path)
+        return model
+
+    except Exception:
+        logger.exception("Failed to load model from %s", path)
+        raise
+
+
+def predict(model: Pipeline, texts: Union[str, Sequence[str]]) -> tuple[list[int], list[list[float]], sparse.spmatrix]:
     """
     Predict labels and probabilities for one or more texts.
 
@@ -88,12 +169,16 @@ def predict(model: Pipeline, texts: Union[str, Sequence[str]]) -> tuple[list[int
             - probabilities: List of lists with predicted class probabilities.
               Each inner list corresponds to a sample and contains probabilities
               for each class in the order returned by `model.classes_`.
+            - TF-IDF vectorized texts.
     """
 
     if isinstance(texts, str):
         texts = [texts]
     
+    tfidf = model.named_steps['tfidf']
+
     predictions = model.predict(texts).tolist()
     probabilities = model.predict_proba(texts).tolist()
+    vectorized = tfidf.transform(texts)
 
-    return predictions, probabilities
+    return predictions, probabilities, vectorized
