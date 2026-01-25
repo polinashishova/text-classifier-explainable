@@ -1,11 +1,9 @@
-from src.text_classifier_explainable.data import download_data, load_json, extract_archive, join_data, save_data, clean_text
-from src.text_classifier_explainable.utils import setup_logging
+from tce.data import download_data, extract_archive, join_data, save_data, clean_text
+from tce.utils import setup_logging, load_json
 from pathlib import Path
 import logging
 
-setup_logging()
-
-logger = logging.getLogger(__name__)
+logger = setup_logging()
 
 paths_cfg_path = Path('config/paths.json')
 paths = load_json(paths_cfg_path)
@@ -40,8 +38,6 @@ if not all((train_texts_path.exists(), train_labels_path.exists(), train_cleaned
     save_data(train_labels_path, train_labels)
     train_cleaned = [clean_text(text) for text in train_texts]
     save_data(train_cleaned_path, train_cleaned)
-else:
-    logging.info('Train data files already exist.')
 
 if not all((test_texts_path.exists(), test_labels_path.exists(), test_cleaned_path.exists())):
     test_texts, test_labels = join_data(raw_test_dir)
@@ -49,5 +45,3 @@ if not all((test_texts_path.exists(), test_labels_path.exists(), test_cleaned_pa
     save_data(test_labels_path, test_labels)
     test_cleaned = [clean_text(text) for text in test_texts]
     save_data(test_cleaned_path, test_cleaned)
-else:
-    logging.info('Test data files already exist.')

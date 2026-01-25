@@ -1,10 +1,10 @@
 import streamlit as st
-from src.text_classifier_explainable.model import load_model, predict
-from src.text_classifier_explainable.utils import setup_logging
-from src.text_classifier_explainable.data import load_json
+from tce.model import load_model, predict
+from tce.utils import setup_logging, load_json
+from tce.explain import explain
 from pathlib import Path
 
-setup_logging()
+logger = setup_logging()
 
 paths_cfg_path = Path('config/paths.json')
 paths = load_json(paths_cfg_path)
@@ -34,6 +34,18 @@ if st.button(label='Classify'):
         elif label[0] == 1:
             name = 'positive'
         st.subheader('Result:')
-        st.success(f'Class: {name}')
-        st.write(f'Model confidence: {round(max(proba[0]), 4)}')
+        if name == 'negative':
+            st.error(f'Class: {name}')
+        elif name == 'positive':
+            st.success(f'Class: {name}')
+        st.write(f'Model confidence: {max(proba[0]):.2f}')
+
+        st.subheader('The most infuential words and phrases')
+        shap_words = explain(explainer, model, text, k_top=3)
+
+        for value in shap_words:
+            if value[1] > 0:
+                st.markdown(f"🟢 **{value[0]}** → +{value[1]:.3f}")
+            else:
+                st.markdown(f"🔴 **{value[0]}** → {value[1]:.3f}")
         

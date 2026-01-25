@@ -20,5 +20,10 @@
     "models_dir": "models",
     "model": "model.joblib",
     "explainer": "explainer.joblib",
-    "shap_bg": "shap/X_bg.npz"
+    "shap_bg": "shap/X_bg.npz",
+    "evaluation_report_dir": "evaluation_report",
+    "model_metrics": "model_metrics.json",
+    "figures_dir": "figures",
+    "roc_curve_plot": "roc_curve_plot.png",
+    "pr_curve_plot": "pr_curve_plot.png"
 }

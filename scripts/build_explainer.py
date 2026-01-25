@@ -1,10 +1,11 @@
-from src.text_classifier_explainable.utils import setup_logging
-from src.text_classifier_explainable.explain import build_explainer
-from src.text_classifier_explainable.model import save_model, load_model
-from src.text_classifier_explainable.data import load_json, load_data
+from tce.utils import setup_logging
+from tce.explain import build_explainer
+from tce.model import save_model, load_model
+from tce.data import load_data
+from tce.utils import load_json
 from pathlib import Path
 
-setup_logging()
+logger = setup_logging()
 
 paths_cfg_path = Path('config/paths.json')
 paths = load_json(paths_cfg_path)
@@ -18,4 +19,4 @@ model = load_model(model_path)
 
 explainer = build_explainer(model, X_train)
 
-save_model(explainer_path, explainer_path)
+save_model(explainer, explainer_path)
