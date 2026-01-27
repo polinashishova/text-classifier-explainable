@@ -48,8 +48,8 @@ dist/
 .cache/
 
 # ----- ML файлы -----
-#*.joblib
-#*.pkl
+*.joblib
+*.pkl
 
 # ----- Данные -----
 data/raw/
