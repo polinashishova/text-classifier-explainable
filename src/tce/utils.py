@@ -8,7 +8,7 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(level: int = logging.INFO, log_dir: Path = Path('logs'), log_filename: str = 'logs.log'):
+def setup_logging(level: int = logging.INFO, log_dir: Path = Path('artifacts/logs'), log_filename: str = 'logs.log'):
     """
     Set up centralized logging for the project with console and file output.
 

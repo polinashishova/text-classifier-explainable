@@ -1,0 +1,13 @@
+{
+    "lr__C": 10,
+    "lr__random_state": 42,
+    "lr__solver": "saga",
+    "tfidf__max_df": 0.95,
+    "tfidf__min_df": 2,
+    "tfidf__ngram_range": [
+        1,
+        2
+    ],
+    "tfidf__preprocessor": "clean_text",
+    "tfidf__sublinear_tf": true
+}

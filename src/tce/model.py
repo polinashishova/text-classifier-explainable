@@ -18,6 +18,9 @@ PREPROCESSORS: dict[str, Callable[[str], str]] = {
     'clean_text': clean_text
 }
 
+POS_LABEL = 1
+NEG_LABEL = 0
+
 logger = logging.getLogger(__name__)
 
 
@@ -191,7 +194,7 @@ def predict(model: Pipeline, texts: str | Sequence[str]) -> tuple[list[int], lis
             - predictions (list[int]): List of predicted labels.
             - probabilities (list[list[float]]): List of lists with predicted class probabilities.
               Each inner list corresponds to a sample and contains probabilities
-              for each class in the order returned by `model.classes_`.
+              for each class in the order (negative, positive).
             - TF-IDF vectorized texts (sparse.csr_matrix).
     Raises:
         ValueError:
@@ -214,7 +217,17 @@ def predict(model: Pipeline, texts: str | Sequence[str]) -> tuple[list[int], lis
     tfidf = model.named_steps['tfidf']
 
     predictions = model.predict(texts).tolist()
-    probabilities = model.predict_proba(texts).tolist()
+
+    probabilities = model.predict_proba(texts)
+    classes = model.classes_
+    if POS_LABEL not in classes or NEG_LABEL not in classes:
+        raise ValueError(f'Positive label {POS_LABEL} not found in model.classes_')
+
+    neg_index = list(classes).index(NEG_LABEL)
+    pos_index = list(classes).index(POS_LABEL)
+
+    probabilities = probabilities[:, [neg_index, pos_index]].tolist()
+
     vectorized = tfidf.transform(texts)
 
     return predictions, probabilities, vectorized

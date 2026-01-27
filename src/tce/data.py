@@ -134,6 +134,7 @@ def join_data(search_path: Path, skip_errors: bool = False) -> tuple[list[str], 
 def save_data(path: Path, data: Iterable[str | int] | sparse.spmatrix) -> None:
     """
     Save text data, labels or a SciPy sparse matrix to disk.
+    If file exists, saving is skipped.
 
     - Text data or data labels is saved as UTF-8 lines.
     - Sparse matrices are saved in .npz format.
@@ -267,3 +268,28 @@ def clean_text(text: Optional[str]) -> str:
     text = re.sub(r'\s+', ' ', text).strip()
 
     return text
+
+
+def process_split(raw_texts_dir: Path, raw_texts_path: Path, labels_path: Path, proc_texts_path: Path) -> None:
+    """
+    Process a dataset split: join raw texts, clean them and save texts and labels.
+    Skips processing if output files already exist.
+
+    Args:
+        raw_texts_dir (Path): Directory with texts files (.txt).
+        raw_texts_path (Path): Path for saving texts to a single .txt file.
+        labels_path (Path): Path for saving corresponding labels.
+        proc_texts_path (Path): Path for saving cleaned texts.
+    """
+
+    if raw_texts_path.exists() and labels_path.exists() and proc_texts_path.exists():
+        logger.info('Split %s already processed. Skipping', raw_texts_dir.name)
+        return
+    
+    logger.info('Processing split %s', raw_texts_dir.name)
+
+    raw_texts, labels = join_data(raw_texts_dir)
+    save_data(raw_texts_path, raw_texts)
+    save_data(labels_path, labels)
+    texts_cleaned = [clean_text(text) for text in raw_texts]
+    save_data(proc_texts_path, texts_cleaned)

@@ -17,6 +17,7 @@
     "features_train": "X-train-features.npz",
     "features_test": "X-test-features.npz",
     "artifacts_dir": "artifacts",
+    "notebooks_artifacts_dir": "notebooks_artifacts",
     "models_dir": "models",
     "model": "model.joblib",
     "explainer": "explainer.joblib",
