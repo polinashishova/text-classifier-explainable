@@ -1,4 +1,4 @@
-visualization# Text Classification with Explainability  
+# Text Classification with Explainability  
 *(TF-IDF + Logistic Regression + SHAP)*
 
 End-to-end machine learning project for binary sentiment classification of text with interpretable predictions.
