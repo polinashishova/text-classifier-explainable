@@ -1,9 +1,13 @@
 from pathlib import Path
 import sys
 
-sys.path.append(str(Path(__file__).parent / "src"))
+sys.path.append(str(Path(__file__).parent / 'src'))
+sys.path.append(str(Path(__file__).parent / 'scripts'))
 
 import streamlit as st
+from scripts.load_data import main as load_data_main
+from scripts.train_model import main as train_model_main
+from scripts.build_explainer import main as build_explainer_main
 from tce.model import load_model, predict
 from tce.utils import setup_logging, load_json
 from tce.explain import explain
@@ -17,29 +21,30 @@ CLASSES = {
     1: 'positive'
     }
 
-paths_cfg_path = Path('config/paths.json')
-paths = load_json(paths_cfg_path)
-
-model_path = Path(paths['models_dir']) / paths['model']
-explainer_path = Path(paths['models_dir']) / paths['explainer']
-
-
 @st.cache_resource
-def load_models(model_path: Path, explainer_path: Path):
-    """Load ML model and explainer once and cache them."""
+def setup_model_and_explainer():
+    load_data_main()
+    train_model_main()
+    build_explainer_main()
+
+    paths_cfg = Path('config/paths.json')
+    paths = load_json(paths_cfg)
+
+    model_path = Path(paths['models_dir']) / paths['model']
+    explainer_path = Path(paths['models_dir']) / paths['explainer']
     model = load_model(model_path)
     explainer = load_model(explainer_path)
-    return model, explainer
 
+    return model, explainer, paths
 
-model, explainer = load_models(model_path, explainer_path)
+model, explainer, paths = setup_model_and_explainer()
 
 st.title('Text classification with explanation')
 
-st.sidebar.header("Settings")
+st.sidebar.header('Settings')
 
 top_k = st.sidebar.slider(
-    "Number of influential words",
+    'Number of influential words',
     min_value=1,
     max_value=10,
     value=5
