@@ -63,6 +63,16 @@ It is downloaded automatically via a dedicated script.
 
 ---
 
+## Language Support & Limitations
+
+⚠️ This model was trained exclusively on English movie reviews from the IMDb dataset.
+
+- The application supports **English language input only**.
+- Predictions for texts written in other languages may be meaningless or misleading.
+- This limitation comes from the TF-IDF vectorizer and vocabulary built only on English data.
+
+---
+
 ## Repository Structure
 
 artifacts/
