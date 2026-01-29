@@ -1,11 +1,11 @@
-# ----- Файлы ОС -----
+# ----- OS files -----
 .DS_Store
 Thumbs.db
 ehthumbs.db
 Icon?
 desktop.ini
 
-# ----- Временные файлы редакторов -----
+# ----- Editor temp files -----
 *~
 *.swp
 *.swo
@@ -14,7 +14,7 @@ desktop.ini
 *.bak
 *.orig
 
-# ----- Настройки IDE -----
+# ----- IDE -----
 .vscode/
 .idea/
 *.iml
@@ -27,12 +27,13 @@ __pycache__/
 *.egg-info/
 .eggs/
 *.log
+logs/
 
-# ----- Jupyter Notebook -----
+# ----- Jupyter -----
 .ipynb_checkpoints/
 notebooks/.ipynb_checkpoints/
 
-# ----- Виртуальные окружения -----
+# ----- Virtual environments -----
 venv/
 .venv/
 env/
@@ -42,19 +43,21 @@ env/
 !.env.example
 tce-venv/
 
-# ----- Локальные сборки/артефакты -----
+# ----- Build artifacts -----
 build/
 dist/
 .cache/
+*.cache
 
-# ----- ML файлы -----
+# ----- ML artifacts -----
 *.joblib
 *.pkl
 
-# ----- Данные -----
-data/raw/
-data/processed/
-data/features/
+# ----- Data -----
+data/
+
+# ----- Artifacts -----
+artifacts/notebooks_artifacts/
 
 # ----- Streamlit -----
 .streamlit/
