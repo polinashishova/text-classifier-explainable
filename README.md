@@ -299,3 +299,9 @@ This project was developed as a personal ML portfolio project with a focus on:
 - reproducibility,
 
 - clean project structure.
+
+---
+
+## License
+
+This project is licensed under the MIT License – see the LICENSE file for details.
