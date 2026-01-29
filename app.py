@@ -1,4 +1,8 @@
 from pathlib import Path
+import sys
+
+sys.path.append(str(Path(__file__).parent / "src"))
+
 import streamlit as st
 from tce.model import load_model, predict
 from tce.utils import setup_logging, load_json
