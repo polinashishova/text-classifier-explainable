@@ -17,6 +17,35 @@ Users can enter arbitrary text, get a sentiment prediction, model confidence, an
 ![Streamlit App Screenshot](docs/app.png) 
 
 ---
+## Table of Contents
+- [Text Classification with Explainability](#text-classification-with-explainability)
+  - [Live Demo](#live-demo)
+  - [Table of Contents](#table-of-contents)
+  - [Project Overview](#project-overview)
+  - [Motivation \& Use Cases](#motivation--use-cases)
+  - [Data](#data)
+  - [Language Support \& Limitations](#language-support--limitations)
+  - [Repository Structure](#repository-structure)
+  - [Design Principles](#design-principles)
+  - [Data and Models](#data-and-models)
+  - [Local Setup](#local-setup)
+    - [Requirements](#requirements)
+    - [1. Create a virtual environment](#1-create-a-virtual-environment)
+    - [2. Install dependencies](#2-install-dependencies)
+    - [3. Download dataset](#3-download-dataset)
+    - [4. Train model](#4-train-model)
+    - [5. Build SHAP explainer](#5-build-shap-explainer)
+    - [(Optional) Evaluate model](#optional-evaluate-model)
+    - [6. Run the application](#6-run-the-application)
+  - [Streamlit Application](#streamlit-application)
+  - [Explainability](#explainability)
+  - [Notebooks](#notebooks)
+  - [Key metrics](#key-metrics)
+  - [Code Quality](#code-quality)
+  - [Tech Stack](#tech-stack)
+  - [Notes](#notes)
+  - [License](#license)
+---
 
 ## Project Overview
 
