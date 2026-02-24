@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Streamlit App](https://img.shields.io/badge/Streamlit-Open%20Demo-red?logo=streamlit&logoColor=white)](ССЫЛКА_НА_ВАШЕ_ПРИЛОЖЕНИЕ)
+[![Streamlit App](https://img.shields.io/badge/Streamlit-Open%20Demo-red?logo=streamlit&logoColor=white)](https://text-classifier-explainable-ch6n3ty7mkoqdkoeeubyqo.streamlit.app/)
 
 </div>
 
