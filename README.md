@@ -1,3 +1,7 @@
+
+# Text Classification with Explainability  
+*(TF-IDF + Logistic Regression + SHAP)*
+
 <div align="center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -6,8 +10,7 @@
 
 </div>
 
-# Text Classification with Explainability  
-*(TF-IDF + Logistic Regression + SHAP)*
+
 
 End-to-end machine learning project for binary sentiment classification of text with interpretable predictions.
 The project includes a reproducible training pipeline, model evaluation, SHAP-based explainability, and a public Streamlit application.
